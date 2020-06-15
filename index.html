@@ -6,34 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>Peta Riwayat Banjir di Bojonegoro</title>
-    <div class="card">
-        <div class="card-header">
-          <div class="card-tools">
-            <div class="col">
-              <div class="dropdown">
-                <button type="button" class="btn btn-s btn-info dropdown-toggle" data-toggle="dropdown">
-                  Pilih peta yang ditampilkan
-                </button>
-                <div class="dropdown-menu" style="width: 100%">
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_kecamatan" > Peta Kecamatan</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2018" > Peta Average 2018</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2017" > Peta Average 2017</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2016" > Peta Average 2016</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2015" > Peta Average 2015</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2018" > Peta Single 2018</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2017" > Peta Single 2017</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2016" > Peta Single 2016</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2015" > Peta Single 2015</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2018" > Peta Complete 2018</label></div> 
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2017" > Peta Complete 2017</label></div>                    
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2016" > Peta Complete 2016</label></div>
-                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2015" > Peta Complete 2015</label></div>   
-                </div>
-              </div>
-            </div>
-          </div>         
-        </div>
+    <title>Peta Riwayat Banjir di Lamongan</title>
     <style>
         html,
         body {
@@ -110,7 +83,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 
 
 //Layer Kecamatan
-var kecamatanlayer = new L.GeoJSON.AJAX("kecamatan.json", {
+var kecamatanlayer = new L.GeoJSON.AJAX("/js/kecamatan.json", {
     style: {
         fillColor: "#808080",
         fillOpacity: 0.7,
@@ -1116,6 +1089,7 @@ legend.onAdd = function(map) {
 };
 
 legend.addTo(map);
+
     </script>
 </body>
 
