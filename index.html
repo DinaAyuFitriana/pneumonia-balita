@@ -83,7 +83,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 
 
 //Layer Kecamatan
-var kecamatanlayer = new L.GeoJSON.AJAX("/js/kecamatan.json", {
+var kecamatanlayer = new L.GeoJSON.AJAX("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", {
     style: {
         fillColor: "#808080",
         fillOpacity: 0.7,
@@ -109,7 +109,7 @@ document.getElementById("peta_kecamatan").addEventListener("change", function ()
 document.getElementById("peta_pneumonia_average_2018").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
         //untuk menampilkan peta kecamatan.json
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer;
             function resetHighlight(e) {
                 pneumonialayer.resetStyle(e.target);
@@ -195,7 +195,7 @@ function getPneumoniaColor(kecamatan) {
 // LAYER PETA AVERAGE LINKAGE TAHUN 2017
 document.getElementById("peta_pneumonia_average_2017").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_average2017;
             function resetHighlight(e) {
                 pneumonialayer_average2017.resetStyle(e.target);
@@ -275,7 +275,7 @@ function getPneumoniaColorAverage2017(kecamatan) {
 // LAYER PETA AVERAGE LINKAGE TAHUN 2016
 document.getElementById("peta_pneumonia_average_2016").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_average2016;
             function resetHighlight(e) {
                 pneumonialayer_average2016.resetStyle(e.target);
@@ -355,7 +355,7 @@ function getPneumoniaColorAverage2016(kecamatan) {
 // LAYER PETA AVERAGE LINKAGE TAHUN 2015
 document.getElementById("peta_pneumonia_average_2015").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_average2015;
             function resetHighlight(e) {
                 pneumonialayer_average2015.resetStyle(e.target);
@@ -435,7 +435,7 @@ function getPneumoniaColorAverage2015(kecamatan) {
 // LAYER PETA SINGLE LINKAGE TAHUN 2018
 document.getElementById("peta_pneumonia_single_2018").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_single2018;
             function resetHighlight(e) {
                 pneumonialayer_single2018.resetStyle(e.target);
@@ -515,7 +515,7 @@ function getPneumoniaColorSingle2018(kecamatan) {
 // LAYER PETA SINGLE LINKAGE TAHUN 2017
 document.getElementById("peta_pneumonia_single_2017").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_single2017;
             function resetHighlight(e) {
                 pneumonialayer_single2017.resetStyle(e.target);
@@ -595,7 +595,7 @@ function getPneumoniaColorSingle2017(kecamatan) {
 // LAYER PETA SINGLE LINKAGE TAHUN 2016
 document.getElementById("peta_pneumonia_single_2016").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_single2016;
             function resetHighlight(e) {
                 pneumonialayer_single2016.resetStyle(e.target);
@@ -675,7 +675,7 @@ function getPneumoniaColorSingle2016(kecamatan) {
 // LAYER PETA SINGLE LINKAGE TAHUN 2015
 document.getElementById("peta_pneumonia_single_2015").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_single2015;
             function resetHighlight(e) {
                 pneumonialayer_single2015.resetStyle(e.target);
@@ -755,7 +755,7 @@ function getPneumoniaColorSingle2015(kecamatan) {
 // LAYER PETA COMPLETE LINKAGE TAHUN 2018
 document.getElementById("peta_pneumonia_complete_2018").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_complete2018;
             function resetHighlight(e) {
                 pneumonialayer_complete2018.resetStyle(e.target);
@@ -835,7 +835,7 @@ function getPneumoniaColorComplete2018(kecamatan) {
 // LAYER PETA COMPLETE LINKAGE TAHUN 2017
 document.getElementById("peta_pneumonia_complete_2017").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_complete2017;
             function resetHighlight(e) {
                 pneumonialayer_complete2017.resetStyle(e.target);
@@ -915,7 +915,7 @@ function getPneumoniaColorComplete2017(kecamatan) {
 // LAYER PETA COMPLETE LINKAGE TAHUN 2016
 document.getElementById("peta_pneumonia_complete_2016").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_complete2016;
             function resetHighlight(e) {
                 pneumonialayer_complete2016.resetStyle(e.target);
@@ -995,7 +995,7 @@ function getPneumoniaColorComplete2016(kecamatan) {
 // LAYER PETA COMPLETE LINKAGE TAHUN 2015
 document.getElementById("peta_pneumonia_complete_2015").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
-        $.getJSON("/js/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
             var pneumonialayer_complete2015;
             function resetHighlight(e) {
                 pneumonialayer_complete2015.resetStyle(e.target);
@@ -1079,7 +1079,6 @@ var legend = L.control({
 legend.onAdd = function(map) {
 
     var div = L.DomUtil.create('div', 'legend');
-
     div.innerHTML += "<h4>Keterangan Warna</h4>";
     div.innerHTML += '<i style="background: #d64337"></i><span>Tinggi</span><br>';
     div.innerHTML += '<i style="background: #ffff00"></i><span>Sedang</span><br>';
