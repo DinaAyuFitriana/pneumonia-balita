@@ -65,9 +65,34 @@
 </head>
 
 <body>
-
     <div id="mapid"></div>
-
+    <div class="card">
+        <div class="card-header">
+          <div class="card-tools">
+            <div class="col">
+              <div class="dropdown">
+                <button type="button" class="btn btn-s btn-info dropdown-toggle" data-toggle="dropdown">
+                  Pilih peta yang ditampilkan
+                </button>
+                <div class="dropdown-menu" style="width: 100%">
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_kecamatan" > Peta Kecamatan</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2018" > Peta Average 2018</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2017" > Peta Average 2017</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2016" > Peta Average 2016</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2015" > Peta Average 2015</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2018" > Peta Single 2018</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2017" > Peta Single 2017</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2016" > Peta Single 2016</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_single_2015" > Peta Single 2015</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2018" > Peta Complete 2018</label></div> 
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2017" > Peta Complete 2017</label></div>                    
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2016" > Peta Complete 2016</label></div>
+                  <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2015" > Peta Complete 2015</label></div>   
+                </div>
+              </div>
+            </div>
+          </div>         
+        </div>
     <script>
         //Menampilkan Peta
 var map = L.map('mapid').setView([-7.152341, 111.882487], 10);
