@@ -134,7 +134,7 @@ document.getElementById("peta_kecamatan").addEventListener("change", function ()
 document.getElementById("peta_pneumonia_average_2018").addEventListener("change", function() {
     if (document.getElementById(this.id).checked == true) {
         //untuk menampilkan peta kecamatan.json
-        $.getJSON("https://dinaayufitriana.github.io/pneumonia-balita/kecamatan.json", function(data) {
+        $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
             var pneumonialayer;
             function resetHighlight(e) {
                 pneumonialayer.resetStyle(e.target);
