@@ -180,6 +180,7 @@
                             layer.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer = L.geoJson(data, {
                         onEachFeature: function(feature, layer) {
                             layer.on({
@@ -196,29 +197,29 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumonia(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumonia(feature.properties.id_kecamatan,kasus)
                             };
                         }
-
+        
                     }).addTo(map);
                     map.fitBounds(pneumonialayer.getBounds());
-
+        
                     pneumonialayer.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer.remove(map);
             }
         });
-        //untuk memberi warna 
-        function getColorPneumonia(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColor(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColor(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColor(kecamatan) ? '#006600' :
+        //untuk memberi warna
+        function getColorPneumonia(kecamatan,kasus) {
+            return 'Tinggi' == getPneumoniaColor(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColor(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColor(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColor(kecamatan) {
+        function getPneumoniaColor(kecamatan,kasus) {
             //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
@@ -238,6 +239,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }    
             });  
             return color;
@@ -266,6 +271,7 @@
                             layer2.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_average2017 = L.geoJson(data, {
                         onEachFeature: function(feature, layer2) {
                             layer2.on({
@@ -282,27 +288,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaAverage2017(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaAverage2017(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_average2017.getBounds());
 
                     pneumonialayer_average2017.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_average2017.remove(map);
             }
         });
-        function getColorPneumoniaAverage2017(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorAverage2017(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorAverage2017(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorAverage2017(kecamatan) ? '#006600' :
+        function getColorPneumoniaAverage2017(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorAverage2017(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorAverage2017(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorAverage2017(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorAverage2017(kecamatan) {
+        function getPneumoniaColorAverage2017(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/averageclustering',
@@ -318,6 +324,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }        
             });  
             return color;
@@ -346,6 +356,7 @@
                             layer3.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_average2016 = L.geoJson(data, {
                         onEachFeature: function(feature, layer3) {
                             layer3.on({
@@ -362,27 +373,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaAverage2016(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaAverage2016(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_average2016.getBounds());
 
                     pneumonialayer_average2016.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_average2016.remove(map);
             }
         });
-        function getColorPneumoniaAverage2016(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorAverage2016(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorAverage2016(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorAverage2016(kecamatan) ? '#006600' :
+        function getColorPneumoniaAverage2016(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorAverage2016(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorAverage2016(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorAverage2016(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorAverage2016(kecamatan) {
+        function getPneumoniaColorAverage2016(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/averageclustering',
@@ -398,6 +409,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -426,6 +441,7 @@
                             layer4.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_average2015 = L.geoJson(data, {
                         onEachFeature: function(feature, layer4) {
                             layer4.on({
@@ -442,27 +458,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaAverage2015(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaAverage2015(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_average2015.getBounds());
 
                     pneumonialayer_average2015.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_average2015.remove(map);
             }
         });
-        function getColorPneumoniaAverage2015(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorAverage2015(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorAverage2015(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorAverage2015(kecamatan) ? '#006600' :
+        function getColorPneumoniaAverage2015(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorAverage2015(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorAverage2015(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorAverage2015(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorAverage2015(kecamatan) {
+        function getPneumoniaColorAverage2015(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/averageclustering',
@@ -478,6 +494,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -506,6 +526,7 @@
                             layer5.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_single2018 = L.geoJson(data, {
                         onEachFeature: function(feature, layer5) {
                             layer5.on({
@@ -522,27 +543,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2018(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaSingle2018(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_single2018.getBounds());
 
                     pneumonialayer_single2018.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_single2018.remove(map);
             }
         });
-        function getColorPneumoniaSingle2018(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorSingle2018(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2018(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2018(kecamatan) ? '#006600' :
+        function getColorPneumoniaSingle2018(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorSingle2018(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorSingle2018(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorSingle2018(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorSingle2018(kecamatan) {
+        function getPneumoniaColorSingle2018(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
@@ -558,6 +579,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -586,6 +611,7 @@
                             layer6.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_single2017 = L.geoJson(data, {
                         onEachFeature: function(feature, layer6) {
                             layer6.on({
@@ -602,27 +628,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2017(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaSingle2017(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_single2017.getBounds());
 
                     pneumonialayer_single2017.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_single2017.remove(map);
             }
         });
-        function getColorPneumoniaSingle2017(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorSingle2017(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2017(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2017(kecamatan) ? '#006600' :
+        function getColorPneumoniaSingle2017(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorSingle2017(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorSingle2017(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorSingle2017(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorSingle2017(kecamatan) {
+        function getPneumoniaColorSingle2017(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
@@ -638,6 +664,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -666,6 +696,7 @@
                             layer7.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_single2016 = L.geoJson(data, {
                         onEachFeature: function(feature, layer7) {
                             layer7.on({
@@ -682,27 +713,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2016(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaSingle2016(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_single2016.getBounds());
 
                     pneumonialayer_single2016.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_single2016.remove(map);
             }
         });
-        function getColorPneumoniaSingle2016(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorSingle2016(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2016(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2016(kecamatan) ? '#006600' :
+        function getColorPneumoniaSingle2016(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorSingle2016(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorSingle2016(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorSingle2016(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorSingle2016(kecamatan) {
+        function getPneumoniaColorSingle2016(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
@@ -718,6 +749,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -746,6 +781,7 @@
                             layer8.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_single2015 = L.geoJson(data, {
                         onEachFeature: function(feature, layer8) {
                             layer8.on({
@@ -762,27 +798,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2015(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaSingle2015(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_single2015.getBounds());
 
                     pneumonialayer_single2015.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_single2015.remove(map);
             }
         });
-        function getColorPneumoniaSingle2015(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorSingle2015(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2015(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2015(kecamatan) ? '#006600' :
+        function getColorPneumoniaSingle2015(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorSingle2015(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorSingle2015(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorSingle2015(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorSingle2015(kecamatan) {
+        function getPneumoniaColorSingle2015(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
@@ -798,6 +834,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -826,6 +866,7 @@
                             layer9.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_complete2018 = L.geoJson(data, {
                         onEachFeature: function(feature, layer9) {
                             layer9.on({
@@ -842,27 +883,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2018(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaComplete2018(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_complete2018.getBounds());
 
                     pneumonialayer_complete2018.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_complete2018.remove(map);
             }
         });
-        function getColorPneumoniaComplete2018(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorComplete2018(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2018(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2018(kecamatan) ? '#006600' :
+        function getColorPneumoniaComplete2018(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorComplete2018(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorComplete2018(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorComplete2018(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorComplete2018(kecamatan) {
+        function getPneumoniaColorComplete2018(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
@@ -878,6 +919,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -906,6 +951,7 @@
                             layer10.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_complete2017 = L.geoJson(data, {
                         onEachFeature: function(feature, layer10) {
                             layer10.on({
@@ -922,27 +968,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2017(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaComplete2017(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_complete2017.getBounds());
 
                     pneumonialayer_complete2017.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_complete2017.remove(map);
             }
         });
-        function getColorPneumoniaComplete2017(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorComplete2017(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2017(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2017(kecamatan) ? '#006600' :
+        function getColorPneumoniaComplete2017(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorComplete2017(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorComplete2017(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorComplete2017(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorComplete2017(kecamatan) {
+        function getPneumoniaColorComplete2017(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
@@ -958,6 +1004,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -986,6 +1036,7 @@
                             layer11.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_complete2016 = L.geoJson(data, {
                         onEachFeature: function(feature, layer11) {
                             layer11.on({
@@ -1002,27 +1053,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2016(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaComplete2016(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_complete2016.getBounds());
 
                     pneumonialayer_complete2016.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_complete2016.remove(map);
             }
         });
-        function getColorPneumoniaComplete2016(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorComplete2016(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2016(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2016(kecamatan) ? '#006600' :
+        function getColorPneumoniaComplete2016(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorComplete2016(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorComplete2016(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorComplete2016(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorComplete2016(kecamatan) {
+        function getPneumoniaColorComplete2016(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
@@ -1038,6 +1089,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
@@ -1066,6 +1121,7 @@
                             layer12.bringToFront();
                         }
                     }
+                    var kasus = {};
                     var pneumonialayer_complete2015 = L.geoJson(data, {
                         onEachFeature: function(feature, layer12) {
                             layer12.on({
@@ -1082,27 +1138,27 @@
                                 color: 'white',
                                 dashArray: '3',
                                 fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2015(feature.properties.id_kecamatan)
+                                fillColor: getColorPneumoniaComplete2015(feature.properties.id_kecamatan,kasus)
                             };
                         }
                     }).addTo(map);
                     map.fitBounds(pneumonialayer_complete2015.getBounds());
 
                     pneumonialayer_complete2015.bindPopup(function(e) {
-                        return e.feature.properties.Kecamatan;
+                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Balita Diperiksa = " + kasus['balita_diperiksa'] + "<br>Penderita = " + kasus['jumlah_penderita'];
                     });
                 });
             } else {
                 pneumonialayer_complete2015.remove(map);
             }
         });
-        function getColorPneumoniaComplete2015(kecamatan) { 
-            return 'Tinggi' == getPneumoniaColorComplete2015(kecamatan) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2015(kecamatan) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2015(kecamatan) ? '#006600' :
+        function getColorPneumoniaComplete2015(kecamatan,kasus) { 
+            return 'Tinggi' == getPneumoniaColorComplete2015(kecamatan,kasus) ? '#d64337' :
+            'Sedang' == getPneumoniaColorComplete2015(kecamatan,kasus) ? '#ffff00' :
+            'Rendah' == getPneumoniaColorComplete2015(kecamatan,kasus) ? '#006600' :
             '#baf1a1';
         }
-        function getPneumoniaColorComplete2015(kecamatan) {
+        function getPneumoniaColorComplete2015(kecamatan,kasus) {
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
@@ -1118,6 +1174,10 @@
                 if (kecamatan == item['0']) {
                     color = item['15']; 
                     console.log("color",color);
+                    // init kasus
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+                    kasus['balita_diperiksa'] = item['4'];
                 }
             });  
             return color;
