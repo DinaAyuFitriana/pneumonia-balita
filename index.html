@@ -1,12 +1,11 @@
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>Peta Riwayat Banjir di Bojonegoro</title>
+    <title>Peta Rawan Pneumonia Balita di Bojonegoro</title>
     <style>
         html,
         body {
@@ -14,7 +13,6 @@
             padding: 0;
             margin: 0;
         }
-        
         #mapid {
             height: 100%;
             width: 100vw;
@@ -25,8 +23,6 @@
             font: 14px Arial, Helvetica, sans-serif;
             background: white;
             background: rgba(255, 255, 255, 0.8);
-            /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);*/
-            /*border-radius: 5px;*/
             line-height: 24px;
             color: #555;
         }
@@ -92,7 +88,6 @@
         <div class="row">
         <div class="col-md-12">
         <input aria-label="" id="viewMap" value="0" hidden>
-        <div class="card">
           <div class="card-header">
             <div class="card-tools">
               <div class="col">
@@ -121,9 +116,9 @@
             </div>         
           </div>
           <!-- /.card-header -->
-          <div class="card-body" id="divMap">
+          <div id="divMap">
             <div class="row">
-              <div class="col-md-12">     
+              <div class="col-md-12" padding-right:-10px;>     
                 <div id="mapid" style="width: 100%; height: 600px"></div>
               </div>
             </div><!-- /.row -->
@@ -238,7 +233,7 @@
                         map.fitBounds(pneumonialayer.getBounds());
         
                         pneumonialayer.bindPopup(function (e) {
-                            return "<br> Kecamatan = " + e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " + e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -358,7 +353,7 @@
                         map.fitBounds(pneumonialayer_average2017.getBounds());
         
                         pneumonialayer_average2017.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -478,7 +473,7 @@
                         map.fitBounds(pneumonialayer_average2016.getBounds());
         
                         pneumonialayer_average2016.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -598,7 +593,7 @@
                         map.fitBounds(pneumonialayer_average2015.getBounds());
         
                         pneumonialayer_average2015.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -718,7 +713,7 @@
                         map.fitBounds(pneumonialayer_single2018.getBounds());
         
                         pneumonialayer_single2018.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -838,7 +833,7 @@
                         map.fitBounds(pneumonialayer_single2017.getBounds());
         
                         pneumonialayer_single2017.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -958,7 +953,7 @@
                         map.fitBounds(pneumonialayer_single2016.getBounds());
         
                         pneumonialayer_single2016.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -1078,7 +1073,7 @@
                         map.fitBounds(pneumonialayer_single2015.getBounds());
         
                         pneumonialayer_single2015.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -1198,7 +1193,7 @@
                         map.fitBounds(pneumonialayer_complete2018.getBounds());
         
                         pneumonialayer_complete2018.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -1318,7 +1313,7 @@
                         map.fitBounds(pneumonialayer_complete2017.getBounds());
         
                         pneumonialayer_complete2017.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -1438,7 +1433,7 @@
                         map.fitBounds(pneumonialayer_complete2016.getBounds());
         
                         pneumonialayer_complete2016.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
@@ -1558,7 +1553,7 @@
                         map.fitBounds(pneumonialayer_complete2015.getBounds());
         
                         pneumonialayer_complete2015.bindPopup(function (e) {
-                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
                         });
         
                     });
