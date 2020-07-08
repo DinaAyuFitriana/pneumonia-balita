@@ -101,8 +101,7 @@
                     Pilih peta yang ditampilkan
                   </button>
                   <div class="dropdown-menu" style="width: 100%">
-                       
-                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_kecamatan" >Peta Kecamatan</label></div>
+                    
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2018" > Peta Average 2018</label></div>
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2017" > Peta Average 2017</label></div>
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2016" > Peta Average 2016</label></div>
@@ -114,7 +113,8 @@
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2018" > Peta Complete 2018</label></div> 
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2017" > Peta Complete 2017</label></div>                    
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2016" > Peta Complete 2016</label></div>
-                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2015" > Peta Complete 2015</label></div>
+                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2015" > Peta Complete 2015</label></div>   
+                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_kecamatan" > Peta Kecamatan</label></div>
                 </div>
                 </div>
               </div>
@@ -133,37 +133,35 @@
     </div> <!-- /.row -->
   </div><!-- /.container-fluid -->
     <script>
-                //Menampilkan Peta
-//Menampilkan Peta
-var map = L.map('mapid').setView([-7.152341, 111.882487], 10);
+           //Menampilkan Peta
+        var map = L.map('mapid').setView([-7.152341, 111.882487], 10);
 
-L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.streets',
-    tileSize: 512,
-    zoomOffset: -1,
-    accessToken: 'pk.eyJ1Ijoicnlhbjkzc3AiLCJhIjoiY2pkMDJxZ2xpMGxjYTJxbzRtd3EzZnRzcCJ9.WsRQpljGbYjxw7za2_cPtA'
-}).addTo(map);
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://mapbox.com">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.streets',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1Ijoicnlhbjkzc3AiLCJhIjoiY2pkMDJxZ2xpMGxjYTJxbzRtd3EzZnRzcCJ9.WsRQpljGbYjxw7za2_cPtA'
+        }).addTo(map);
 
-
-//get kecamatan.json sekali aja
-var me = this;
-$.getJSON("/js/kecamatan.json", function (data) {
-    me.dataKecamatan = data;
-    //Layer Kecamatan
-    me.kecamatanlayer = L.geoJson(me.dataKecamatan, {
-        style: {
-            fillColor: "#808080",
-            fillOpacity: 0.7,
-            color: "white",
-            weight: 1,
-            opacity: 0.7
-        }
-    });
- 
-    me.kecamatanlayer.addTo(map);
-});
+        //get kecamatan.json sekali aja
+        var me = this;
+        $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function (data) {
+            me.dataKecamatan = data;
+            //Layer Kecamatan
+            me.kecamatanlayer = L.geoJson(me.dataKecamatan, {
+                style: {
+                    fillColor: "#808080",
+                    fillOpacity: 0.7,
+                    color: "white",
+                    weight: 1,
+                    opacity: 0.7
+                }
+            });
+        
+            me.kecamatanlayer.addTo(map);
+        });
         //LAYER PETA KECAMATAN
         document.getElementById("peta_kecamatan").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
