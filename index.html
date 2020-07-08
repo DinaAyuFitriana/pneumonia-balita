@@ -101,7 +101,8 @@
                     Pilih peta yang ditampilkan
                   </button>
                   <div class="dropdown-menu" style="width: 100%">
-                    
+                       
+                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_kecamatan" >Peta Kecamatan</label></div>
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2018" > Peta Average 2018</label></div>
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2017" > Peta Average 2017</label></div>
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_average_2016" > Peta Average 2016</label></div>
@@ -113,8 +114,7 @@
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2018" > Peta Complete 2018</label></div> 
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2017" > Peta Complete 2017</label></div>                    
                     <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2016" > Peta Complete 2016</label></div>
-                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2015" > Peta Complete 2015</label></div>   
-                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_kecamatan" > Peta Kecamatan</label></div>
+                    <div class="checkbox dropdown-item"><label><input type="checkbox" id="peta_pneumonia_complete_2015" > Peta Complete 2015</label></div>
                 </div>
                 </div>
               </div>
@@ -134,1041 +134,1485 @@
   </div><!-- /.container-fluid -->
     <script>
                 //Menampilkan Peta
-        var map = L.map('mapid').setView([-7.152341, 111.882487], 10);
+//Menampilkan Peta
+var map = L.map('mapid').setView([-7.152341, 111.882487], 10);
 
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://mapbox.com">Mapbox</a>',
-            maxZoom: 18,
-            id: 'mapbox.streets',
-            tileSize: 512,
-            zoomOffset: -1,
-            accessToken: 'pk.eyJ1Ijoicnlhbjkzc3AiLCJhIjoiY2pkMDJxZ2xpMGxjYTJxbzRtd3EzZnRzcCJ9.WsRQpljGbYjxw7za2_cPtA'
-        }).addTo(map);
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1Ijoicnlhbjkzc3AiLCJhIjoiY2pkMDJxZ2xpMGxjYTJxbzRtd3EzZnRzcCJ9.WsRQpljGbYjxw7za2_cPtA'
+}).addTo(map);
 
 
+//get kecamatan.json sekali aja
+var me = this;
+$.getJSON("/js/kecamatan.json", function (data) {
+    me.dataKecamatan = data;
+    //Layer Kecamatan
+    me.kecamatanlayer = L.geoJson(me.dataKecamatan, {
+        style: {
+            fillColor: "#808080",
+            fillOpacity: 0.7,
+            color: "white",
+            weight: 1,
+            opacity: 0.7
+        }
+    });
+ 
+    me.kecamatanlayer.addTo(map);
+});
         //LAYER PETA KECAMATAN
         document.getElementById("peta_kecamatan").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
                 // document.getElementById('titleMode').innerText = 'Peta Bojonegoro';
-                kecamatanlayer.addTo(map);
+                me.kecamatanlayer.addTo(map);
             } else {
-                kecamatanlayer.remove(map);
+                me.kecamatanlayer.remove(map);
             }
         });
+        
         // END LAYER PETA KECAMATAN
         // LAYER PETA AVERAGE LINKAGE TAHUN 2018
-        document.getElementById("peta_pneumonia_average_2018").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_average_2018").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
                 //untuk menampilkan peta kecamatan.json
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer;
-                    function resetHighlight(e) {
-                        pneumonialayer.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer = e.target;
-                        layer.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer.bringToFront();
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get averageclustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColor(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer = L.geoJson(data, {
-                        onEachFeature: function(feature, layer) {
-                            layer.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer = e.target;
+                            layer.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumonia(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer.bringToFront();
+                            }
                         }
         
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer.getBounds());
+                        var pneumonialayer = L.geoJson(value, {
+                            onEachFeature: function (feature, layer) {
+                                layer.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
         
-                    pneumonialayer.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer.getBounds());
+        
+                        pneumonialayer.bindPopup(function (e) {
+                            return "<br> Kecamatan = " + e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer.remove(map);
             }
         });
         //untuk memberi warna
-        function getColorPneumonia(kecamatan,kasus) {
-            return 'Tinggi' == getPneumoniaColor(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColor(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColor(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumonia(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColor(kecamatan,kasus) {
+        function getColorPneumonia(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColor(handleData) {
             //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/averageclustering',
                 dataType: 'json',
-                success: function(data) {
+                success: function (data) {
                     //disimpan dilocal storage datanya agar bisa dipanggil
-                    localStorage.removeItem('dataPneumonia');
-                    localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2018.original));
                 }
             });
-            //memanggil data localstore
-            var dataPneumonia = localStorage.getItem('dataPneumonia');
-            var color = '';
-            //ini disamakan datanyaa    
-            $.each(JSON.parse(dataPneumonia), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }    
-            });  
-            return color;
         }
         // END LAYER PETA AVERAGE LINKAGE 2018
         // LAYER PETA AVERAGE LINKAGE TAHUN 2017
-        document.getElementById("peta_pneumonia_average_2017").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_average_2017").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_average2017;
-                    function resetHighlight(e) {
-                        pneumonialayer_average2017.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer2 = e.target; 
-                        layer2.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer2.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get averageclustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorAverage2017(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_average2017;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_average2017.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_average2017 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer2) {
-                            layer2.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer2 = e.target;
+                            layer2.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaAverage2017(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer2.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_average2017.getBounds());
-
-                    pneumonialayer_average2017.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_average2017 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer2) {
+                                layer2.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_average2017.getBounds());
+        
+                        pneumonialayer_average2017.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_average2017.remove(map);
             }
         });
-        function getColorPneumoniaAverage2017(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorAverage2017(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorAverage2017(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorAverage2017(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaAverage2017(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorAverage2017(kecamatan,kasus) {
+        function getColorPneumoniaAverage2017(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorAverage2017(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/averageclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaAverage2017');
-                    localStorage.setItem('dataPneumoniaAverage2017', JSON.stringify(data.data2017.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2017.original));
                 }
             });
-            var dataPneumoniaAverage2017 = localStorage.getItem('dataPneumoniaAverage2017');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaAverage2017), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }        
-            });  
-            return color;
         }
         // END LAYER PETA AVERAGE LINKAGE 2017
         // LAYER PETA AVERAGE LINKAGE TAHUN 2016
-        document.getElementById("peta_pneumonia_average_2016").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_average_2016").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_average2016;
-                    function resetHighlight(e) {
-                        pneumonialayer_average2016.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer3 = e.target; 
-                        layer3.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer3.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get averageclustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorAverage2016(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_average2016;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_average2016.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_average2016 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer3) {
-                            layer3.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer3 = e.target;
+                            layer3.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaAverage2016(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer3.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_average2016.getBounds());
-
-                    pneumonialayer_average2016.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_average2016 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer3) {
+                                layer3.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_average2016.getBounds());
+        
+                        pneumonialayer_average2016.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_average2016.remove(map);
             }
         });
-        function getColorPneumoniaAverage2016(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorAverage2016(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorAverage2016(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorAverage2016(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaAverage2016(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorAverage2016(kecamatan,kasus) {
+        function getColorPneumoniaAverage2016(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorAverage2016(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/averageclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaAverage2016');
-                    localStorage.setItem('dataPneumoniaAverage2016', JSON.stringify(data.data2016.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2016.original));
                 }
             });
-            var dataPneumoniaAverage2016 = localStorage.getItem('dataPneumoniaAverage2016');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaAverage2016), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA AVERAGE LINKAGE 2016
         // LAYER PETA AVERAGE LINKAGE TAHUN 2015
-        document.getElementById("peta_pneumonia_average_2015").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_average_2015").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_average2015;
-                    function resetHighlight(e) {
-                        pneumonialayer_average2015.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer4 = e.target; 
-                        layer4.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer4.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get averageclustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorAverage2015(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_average2015;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_average2015.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_average2015 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer4) {
-                            layer4.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer4 = e.target;
+                            layer4.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaAverage2015(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer4.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_average2015.getBounds());
-
-                    pneumonialayer_average2015.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_average2015 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer4) {
+                                layer4.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_average2015.getBounds());
+        
+                        pneumonialayer_average2015.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_average2015.remove(map);
             }
         });
-        function getColorPneumoniaAverage2015(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorAverage2015(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorAverage2015(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorAverage2015(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaAverage2015(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorAverage2015(kecamatan,kasus) {
+        function getColorPneumoniaAverage2015(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorAverage2015(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/averageclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaAverage2015');
-                    localStorage.setItem('dataPneumoniaAverage2015', JSON.stringify(data.data2015.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2015.original));
                 }
             });
-            var dataPneumoniaAverage2015 = localStorage.getItem('dataPneumoniaAverage2015');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaAverage2015), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA AVERAGE LINKAGE 2015
         // LAYER PETA SINGLE LINKAGE TAHUN 2018
-        document.getElementById("peta_pneumonia_single_2018").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_single_2018").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_single2018;
-                    function resetHighlight(e) {
-                        pneumonialayer_single2018.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer5 = e.target; 
-                        layer5.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer5.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get single clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorSingle2018(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_single2018;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_single2018.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_single2018 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer5) {
-                            layer5.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer5 = e.target;
+                            layer5.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2018(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer5.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_single2018.getBounds());
-
-                    pneumonialayer_single2018.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_single2018 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer5) {
+                                layer5.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_single2018.getBounds());
+        
+                        pneumonialayer_single2018.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_single2018.remove(map);
             }
         });
-        function getColorPneumoniaSingle2018(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorSingle2018(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2018(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2018(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaSingle2018(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorSingle2018(kecamatan,kasus) {
+        function getColorPneumoniaSingle2018(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorSingle2018(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaSingle2018');
-                    localStorage.setItem('dataPneumoniaSingle2018', JSON.stringify(data.data2018.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2018.original));
                 }
             });
-            var dataPneumoniaSingle2018 = localStorage.getItem('dataPneumoniaSingle2018');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaSingle2018), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA SINGLE LINKAGE 2018
         // LAYER PETA SINGLE LINKAGE TAHUN 2017
-        document.getElementById("peta_pneumonia_single_2017").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_single_2017").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_single2017;
-                    function resetHighlight(e) {
-                        pneumonialayer_single2017.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer6 = e.target; 
-                        layer6.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer6.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get single clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorSingle2017(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_single2017;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_single2017.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_single2017 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer6) {
-                            layer6.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer6 = e.target;
+                            layer6.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2017(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer6.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_single2017.getBounds());
-
-                    pneumonialayer_single2017.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_single2017 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer6) {
+                                layer6.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature,
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_single2017.getBounds());
+        
+                        pneumonialayer_single2017.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_single2017.remove(map);
             }
         });
-        function getColorPneumoniaSingle2017(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorSingle2017(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2017(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2017(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaSingle2017(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorSingle2017(kecamatan,kasus) {
+        function getColorPneumoniaSingle2017(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorSingle2017(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaSingle2017');
-                    localStorage.setItem('dataPneumoniaSingle2017', JSON.stringify(data.data2017.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2017.original));
                 }
             });
-            var dataPneumoniaSingle2017 = localStorage.getItem('dataPneumoniaSingle2017');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaSingle2017), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA SINGLE LINKAGE 2017
         // LAYER PETA SINGLE LINKAGE TAHUN 2016
-        document.getElementById("peta_pneumonia_single_2016").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_single_2016").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_single2016;
-                    function resetHighlight(e) {
-                        pneumonialayer_single2016.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer7 = e.target; 
-                        layer7.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer7.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get single clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorSingle2016(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_single2018;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_single2016.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_single2016 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer7) {
-                            layer7.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer7 = e.target;
+                            layer7.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2016(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer7.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_single2016.getBounds());
-
-                    pneumonialayer_single2016.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_single2016 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer7) {
+                                layer7.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_single2016.getBounds());
+        
+                        pneumonialayer_single2016.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_single2016.remove(map);
             }
         });
-        function getColorPneumoniaSingle2016(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorSingle2016(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2016(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2016(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaSingle2016(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorSingle2016(kecamatan,kasus) {
+        function getColorPneumoniaSingle2016(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorSingle2016(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaSingle2016');
-                    localStorage.setItem('dataPneumoniaSingle2016', JSON.stringify(data.data2016.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2016.original));
                 }
             });
-            var dataPneumoniaSingle2016 = localStorage.getItem('dataPneumoniaSingle2016');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaSingle2016), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA SINGLE LINKAGE 2016
         // LAYER PETA SINGLE LINKAGE TAHUN 2015
-        document.getElementById("peta_pneumonia_single_2015").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_single_2015").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_single2015;
-                    function resetHighlight(e) {
-                        pneumonialayer_single2015.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer8 = e.target; 
-                        layer8.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer8.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get single clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorSingle2015(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_single2015;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_single2015.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_single2015 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer8) {
-                            layer8.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer8 = e.target;
+                            layer8.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaSingle2015(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer8.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_single2015.getBounds());
-
-                    pneumonialayer_single2015.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_single2015 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer8) {
+                                layer8.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_single2015.getBounds());
+        
+                        pneumonialayer_single2015.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_single2015.remove(map);
             }
         });
-        function getColorPneumoniaSingle2015(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorSingle2015(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorSingle2015(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorSingle2015(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaSingle2015(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorSingle2015(kecamatan,kasus) {
+        function getColorPneumoniaSingle2015(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorSingle2015(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/singleclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaSingle2015');
-                    localStorage.setItem('dataPneumoniaSingle2015', JSON.stringify(data.data2015.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2015.original));
                 }
             });
-            var dataPneumoniaSingle2015 = localStorage.getItem('dataPneumoniaSingle2015');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaSingle2015), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA SINGLE LINKAGE 2015
         // LAYER PETA COMPLETE LINKAGE TAHUN 2018
-        document.getElementById("peta_pneumonia_complete_2018").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_complete_2018").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_complete2018;
-                    function resetHighlight(e) {
-                        pneumonialayer_complete2018.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer9 = e.target; 
-                        layer9.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer9.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get complete clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorComplete2018(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_complete2018;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_complete2018.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_complete2018 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer9) {
-                            layer9.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer9 = e.target;
+                            layer9.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2018(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer9.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_complete2018.getBounds());
-
-                    pneumonialayer_complete2018.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_complete2018 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer9) {
+                                layer9.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_complete2018.getBounds());
+        
+                        pneumonialayer_complete2018.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_complete2018.remove(map);
             }
         });
-        function getColorPneumoniaComplete2018(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorComplete2018(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2018(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2018(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaComplete2018(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorComplete2018(kecamatan,kasus) {
+        function getColorPneumoniaComplete2018(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorComplete2018(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaComplete2018');
-                    localStorage.setItem('dataPneumoniaComplete2018', JSON.stringify(data.data2018.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2018.original));
                 }
             });
-            var dataPneumoniaComplete2018 = localStorage.getItem('dataPneumoniaComplete2018');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaComplete2018), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA COMPLETE LINKAGE 2018
         // LAYER PETA COMPLETE LINKAGE TAHUN 2017
-        document.getElementById("peta_pneumonia_complete_2017").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_complete_2017").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_complete2017;
-                    function resetHighlight(e) {
-                        pneumonialayer_complete2017.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer10 = e.target; 
-                        layer10.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer10.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get complete clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorComplete2017(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_complete2017;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_complete2017.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_complete2017 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer10) {
-                            layer10.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer10 = e.target;
+                            layer10.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2017(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer10.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_complete2017.getBounds());
-
-                    pneumonialayer_complete2017.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_complete2017 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer10) {
+                                layer10.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_complete2017.getBounds());
+        
+                        pneumonialayer_complete2017.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_complete2017.remove(map);
             }
         });
-        function getColorPneumoniaComplete2017(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorComplete2017(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2017(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2017(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaComplete2017(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorComplete2017(kecamatan,kasus) {
+        function getColorPneumoniaComplete2017(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorComplete2017(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaComplete2017');
-                    localStorage.setItem('dataPneumoniaComplete2017', JSON.stringify(data.data2017.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2017.original));
                 }
             });
-            var dataPneumoniaComplete2017 = localStorage.getItem('dataPneumoniaComplete2017');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaComplete2017), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA COMPLETE LINKAGE 2017
         // LAYER PETA COMPLETE LINKAGE TAHUN 2016
-        document.getElementById("peta_pneumonia_complete_2016").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_complete_2016").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_complete2016;
-                    function resetHighlight(e) {
-                        pneumonialayer_complete2016.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer11 = e.target; 
-                        layer11.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer11.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get complete clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorComplete2016(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_complete2016;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_complete2016.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_complete2016 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer11) {
-                            layer11.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer11 = e.target;
+                            layer11.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2016(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer11.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_complete2016.getBounds());
-
-                    pneumonialayer_complete2016.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_complete2016 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer11) {
+                                layer11.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_complete2016.getBounds());
+        
+                        pneumonialayer_complete2016.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_complete2016.remove(map);
             }
         });
-        function getColorPneumoniaComplete2016(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorComplete2016(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2016(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2016(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaComplete2016(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorComplete2016(kecamatan,kasus) {
+        function getColorPneumoniaComplete2016(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorComplete2016(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaComplete2016');
-                    localStorage.setItem('dataPneumoniaComplete2016', JSON.stringify(data.data2016.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2016.original));
                 }
             });
-            var dataPneumoniaComplete2016 = localStorage.getItem('dataPneumoniaComplete2016');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaComplete2016), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA COMPLETE LINKAGE 2016
         // LAYER PETA COMPLETE LINKAGE TAHUN 2015
-        document.getElementById("peta_pneumonia_complete_2015").addEventListener("change", function() {
+        document.getElementById("peta_pneumonia_complete_2015").addEventListener("change", function () {
             if (document.getElementById(this.id).checked == true) {
-                $.getJSON("https://dinaayufitriana.github.io/kecamatan-json/kecamatan.json", function(data) {
-                    var pneumonialayer_complete2015;
-                    function resetHighlight(e) {
-                        pneumonialayer_complete2015.resetStyle(e.target);
-                    }
-                    function zoomToFeature(e) {
-                        map.fitBounds(e.target.getBounds());
-                    }
-                    function highlightFeature(e) {
-                        var layer12 = e.target; 
-                        layer12.setStyle({
-                            weight: 5,
-                            color: '#666',
-                            dashArray: '',
-                            fillOpacity: 0.7
-                        });   
-                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                            layer12.bringToFront();
+                //untuk menampilkan peta kecamatan.json
+        
+                // $.getJSON("/js/kecamatan.json", function(data) {
+        
+                //get data pneumonia sekali aja soalnya sama2 get complete clustering, yang buat lemot gara2 ini ditaruh di dalam loop
+        
+                getPneumoniaColorComplete2015(function (dataPneumonia) {
+        
+        
+                    $.each((me.dataKecamatan.features), function (index, value) {
+        
+                        var kecamatan = value.properties.id_kecamatan;
+        
+        
+                        var kasus = getKasus(dataPneumonia, kecamatan);
+        
+                        var pneumonialayer_complete2015;
+        
+                        function resetHighlight(e) {
+                            pneumonialayer_complete2015.resetStyle(e.target);
                         }
-                    }
-                    var kasus = {};
-                    var pneumonialayer_complete2015 = L.geoJson(data, {
-                        onEachFeature: function(feature, layer12) {
-                            layer12.on({
-                                mouseover: highlightFeature,
-                                mouseout: resetHighlight,
-                                click: zoomToFeature
+        
+                        function zoomToFeature(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+        
+                        function highlightFeature(e) {
+                            var layer12 = e.target;
+                            layer12.setStyle({
+                                weight: 5,
+                                color: '#666',
+                                dashArray: '',
+                                fillOpacity: 0.7
                             });
-                        },
-                        style: function(feature) {
-                            console.log('feature.properties.Kecamatan');
-                            return {
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                dashArray: '3',
-                                fillOpacity: 0.7,
-                                fillColor: getColorPneumoniaComplete2015(feature.properties.id_kecamatan,kasus)
-                            };
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer12.bringToFront();
+                            }
                         }
-                    }).addTo(map);
-                    map.fitBounds(pneumonialayer_complete2015.getBounds());
-
-                    pneumonialayer_complete2015.bindPopup(function(e) {
-                        return "Kecamatan = " + e.feature.properties.Kecamatan + "<br>Jumlah Balita = " + kasus['jumlah_balita'] + "<br>Penderita = " + kasus['jumlah_penderita'];
+        
+                        var pneumonialayer_complete2015 = L.geoJson(value, {
+                            onEachFeature: function (feature, layer12) {
+                                layer12.on({
+                                    mouseover: highlightFeature,
+                                    mouseout: resetHighlight,
+                                    click: zoomToFeature
+                                });
+                            },
+                            style: function (feature) {
+                                return {
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    dashArray: '3',
+                                    fillOpacity: 0.7,
+                                    fillColor: kasus['warna']
+                                };
+                            }
+        
+                        }).addTo(map);
+                        map.fitBounds(pneumonialayer_complete2015.getBounds());
+        
+                        pneumonialayer_complete2015.bindPopup(function (e) {
+                            return "<br> Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                        });
+        
                     });
+        
                 });
+        
             } else {
                 pneumonialayer_complete2015.remove(map);
             }
         });
-        function getColorPneumoniaComplete2015(kecamatan,kasus) { 
-            return 'Tinggi' == getPneumoniaColorComplete2015(kecamatan,kasus) ? '#d64337' :
-            'Sedang' == getPneumoniaColorComplete2015(kecamatan,kasus) ? '#ffff00' :
-            'Rendah' == getPneumoniaColorComplete2015(kecamatan,kasus) ? '#006600' :
-            '#baf1a1';
+        //untuk memberi warna
+        
+        function getKasus(data, kecamatan) {
+            var kasus = {};
+        
+            $.each(JSON.parse(data), function (num, item) {
+                //manggil array di clestering controller untuk disamakan dengan id_kecamatan di geojson
+                if (kecamatan == item['0']) {
+                    var color = item['15'];
+                    // init kasus
+                    kasus['warna'] = getColorPneumoniaComplete2015(color);
+                    kasus['jumlah_balita'] = item['3'];
+                    kasus['jumlah_penderita'] = item['2'];
+        
+                    return kasus;
+                }
+            });
+        
+            return kasus;
         }
-        function getPneumoniaColorComplete2015(kecamatan,kasus) {
+        function getColorPneumoniaComplete2015(warna) {
+            return 'Tinggi' == warna ? '#d64337' :
+                'Sedang' == warna ? '#ffff00' :
+                'Rendah' == warna ? '#006600' :
+                '#baf1a1';
+        }
+        
+        function getPneumoniaColorComplete2015(handleData) {
+            //jadi data api dipanggil disini
             $.ajax({
                 type: 'GET',
                 url: 'https://thawing-scrubland-62223.herokuapp.com/admin/completeclustering',
                 dataType: 'json',
-                success: function(data) {
-                    localStorage.removeItem('dataPneumoniaComplete2015');
-                    localStorage.setItem('dataPneumoniaComplete2015', JSON.stringify(data.data2015.original));
+                success: function (data) {
+                    //disimpan dilocal storage datanya agar bisa dipanggil
+                    //  localStorage.removeItem('dataPneumonia');
+                    // localStorage.setItem('dataPneumonia', JSON.stringify(data.data2018.original));
+                    // tidak perlu disimpan distorage karena tidak pernah dipanggil
+                
+                    handleData(JSON.stringify(data.data2015.original));
                 }
             });
-            var dataPneumoniaComplete2015 = localStorage.getItem('dataPneumoniaComplete2015');
-            var color = ''; 
-            $.each(JSON.parse(dataPneumoniaComplete2015), function(num, item) {
-                if (kecamatan == item['0']) {
-                    color = item['15']; 
-                    console.log("color",color);
-                    // init kasus
-                    kasus['jumlah_balita'] = item['3'];
-                    kasus['jumlah_penderita'] = item['2'];
-                }
-            });  
-            return color;
         }
         // END LAYER PETA COMPLETE LINKAGE 2015
         //Legend pada Peta
