@@ -178,13 +178,13 @@
         
                 getPneumoniaColor(function (dataPneumonia) {
         
-        
+
                     $.each((me.dataKecamatan.features), function (index, value) {
         
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusAverage2018(dataPneumonia, kecamatan);
         
                         var pneumonialayer;
         
@@ -230,9 +230,9 @@
         
                         }).addTo(map);
                         map.fitBounds(pneumonialayer.getBounds());
-        
+                        console.log("kasus",kasus);
                         pneumonialayer.bindPopup(function (e) {
-                            return "Kecamatan = " + e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " + e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ "<br> Faktor yang perlu diperbaiki = "+ kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -245,7 +245,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusAverage2018(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -256,7 +256,7 @@
                     kasus['warna'] = getColorPneumonia(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -298,13 +298,12 @@
         
                 getPneumoniaColorAverage2017(function (dataPneumonia) {
         
-        
                     $.each((me.dataKecamatan.features), function (index, value) {
         
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusAverage2017(dataPneumonia, kecamatan);
         
                         var pneumonialayer_average2017;
         
@@ -347,25 +346,21 @@
                                     fillColor: kasus['warna']
                                 };
                             }
-        
                         }).addTo(map);
                         map.fitBounds(pneumonialayer_average2017.getBounds());
         
                         pneumonialayer_average2017.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
-        
                     });
-        
                 });
-        
             } else {
                 pneumonialayer_average2017.remove(map);
             }
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusAverage2017(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -376,6 +371,7 @@
                     kasus['warna'] = getColorPneumoniaAverage2017(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
         
                     return kasus;
                 }
@@ -424,7 +420,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusAverage2016(dataPneumonia, kecamatan);
         
                         var pneumonialayer_average2016;
         
@@ -472,20 +468,17 @@
                         map.fitBounds(pneumonialayer_average2016.getBounds());
         
                         pneumonialayer_average2016.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
-        
                     });
-        
                 });
-        
             } else {
                 pneumonialayer_average2016.remove(map);
             }
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusAverage2016(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -496,11 +489,10 @@
                     kasus['warna'] = getColorPneumoniaAverage2016(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
-        
             return kasus;
         }
         function getColorPneumoniaAverage2016(warna) {
@@ -544,7 +536,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusAverage2015(dataPneumonia, kecamatan);
         
                         var pneumonialayer_average2015;
         
@@ -592,7 +584,7 @@
                         map.fitBounds(pneumonialayer_average2015.getBounds());
         
                         pneumonialayer_average2015.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -605,7 +597,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusAverage2015(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -616,7 +608,7 @@
                     kasus['warna'] = getColorPneumoniaAverage2015(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -664,7 +656,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusSingle2018(dataPneumonia, kecamatan);
         
                         var pneumonialayer_single2018;
         
@@ -712,7 +704,7 @@
                         map.fitBounds(pneumonialayer_single2018.getBounds());
         
                         pneumonialayer_single2018.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -725,7 +717,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusSingle2018(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -736,7 +728,7 @@
                     kasus['warna'] = getColorPneumoniaSingle2018(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -784,7 +776,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusSingle2017(dataPneumonia, kecamatan);
         
                         var pneumonialayer_single2017;
         
@@ -832,7 +824,7 @@
                         map.fitBounds(pneumonialayer_single2017.getBounds());
         
                         pneumonialayer_single2017.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -845,7 +837,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusSingle2017(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -856,7 +848,7 @@
                     kasus['warna'] = getColorPneumoniaSingle2017(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -904,7 +896,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusSingle2016(dataPneumonia, kecamatan);
         
                         var pneumonialayer_single2018;
         
@@ -952,7 +944,7 @@
                         map.fitBounds(pneumonialayer_single2016.getBounds());
         
                         pneumonialayer_single2016.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -965,7 +957,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusSingle2016(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -976,7 +968,7 @@
                     kasus['warna'] = getColorPneumoniaSingle2016(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -1024,7 +1016,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusSingle2015(dataPneumonia, kecamatan);
         
                         var pneumonialayer_single2015;
         
@@ -1072,7 +1064,7 @@
                         map.fitBounds(pneumonialayer_single2015.getBounds());
         
                         pneumonialayer_single2015.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu dipebaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -1085,7 +1077,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusSingle2015(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -1096,7 +1088,7 @@
                     kasus['warna'] = getColorPneumoniaSingle2015(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -1144,7 +1136,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusComplete2018(dataPneumonia, kecamatan);
         
                         var pneumonialayer_complete2018;
         
@@ -1192,7 +1184,7 @@
                         map.fitBounds(pneumonialayer_complete2018.getBounds());
         
                         pneumonialayer_complete2018.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -1205,7 +1197,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusComplete2018(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -1216,7 +1208,7 @@
                     kasus['warna'] = getColorPneumoniaComplete2018(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -1264,7 +1256,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusComplete2017(dataPneumonia, kecamatan);
         
                         var pneumonialayer_complete2017;
         
@@ -1312,7 +1304,7 @@
                         map.fitBounds(pneumonialayer_complete2017.getBounds());
         
                         pneumonialayer_complete2017.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -1325,7 +1317,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusComplete2017(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -1336,7 +1328,7 @@
                     kasus['warna'] = getColorPneumoniaComplete2017(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -1384,7 +1376,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusComplete2016(dataPneumonia, kecamatan);
         
                         var pneumonialayer_complete2016;
         
@@ -1432,7 +1424,7 @@
                         map.fitBounds(pneumonialayer_complete2016.getBounds());
         
                         pneumonialayer_complete2016.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'];
                         });
         
                     });
@@ -1445,7 +1437,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusComplete2016(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -1456,7 +1448,7 @@
                     kasus['warna'] = getColorPneumoniaComplete2016(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
@@ -1504,7 +1496,7 @@
                         var kecamatan = value.properties.id_kecamatan;
         
         
-                        var kasus = getKasus(dataPneumonia, kecamatan);
+                        var kasus = getKasusComplete2015(dataPneumonia, kecamatan);
         
                         var pneumonialayer_complete2015;
         
@@ -1552,7 +1544,7 @@
                         map.fitBounds(pneumonialayer_complete2015.getBounds());
         
                         pneumonialayer_complete2015.bindPopup(function (e) {
-                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita'];
+                            return "Kecamatan = " +e.feature.properties.Kecamatan + " <br> Jumlah Balita = " + kasus['jumlah_balita'] + " <br> Penderita = " + kasus['jumlah_penderita']+ " <br> Faktor yang perlu diperbaiki = " + kasus['faktor_yang_perlu_diperbaiki'] ;
                         });
         
                     });
@@ -1565,7 +1557,7 @@
         });
         //untuk memberi warna
         
-        function getKasus(data, kecamatan) {
+        function getKasusComplete2015(data, kecamatan) {
             var kasus = {};
         
             $.each(JSON.parse(data), function (num, item) {
@@ -1576,7 +1568,7 @@
                     kasus['warna'] = getColorPneumoniaComplete2015(color);
                     kasus['jumlah_balita'] = item['3'];
                     kasus['jumlah_penderita'] = item['2'];
-        
+                    kasus['faktor_yang_perlu_diperbaiki'] = item['17'];
                     return kasus;
                 }
             });
